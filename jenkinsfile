@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('code pull') {
+            steps {
+               
+           git branch: 'main', url: 'https://github.com/buildpacks/sample-java-app.git'      
+           }
+        }
+        stage('code pull') {
+            steps {
+               
+           sh 'mvn clean install'      
+           }
+        }
+        stage('build docker image') {
+            steps {
+            sh 'pwd'     
+            sh '''docker build -t web -f /home/touadmin/project/sample-java-app/Dockerfile /home/touadmin/project/sample-java-app/
+
+
+             '''    
+           }
+        }
+        stage('docker push') {
+            steps {
+               
+            sh '''sudo docker tag java sravan327/web
+                  sudo docker push sravan327/web
+                                                '''   
+           }
+        }
+                stage('deployment') {
+            steps {
+               
+            sh ''' kubectl apply -f deployment.yml                                               '''   
+          }
+        }
+    }
+}
+
